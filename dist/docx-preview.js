@@ -174,6 +174,7 @@
     function serializeXmlString(elem) {
         return new XMLSerializer().serializeToString(elem);
     }
+    // (4) TODO: maybe update here?
     class XmlParser {
         elements(elem, localName = null) {
             const result = [];
@@ -3401,6 +3402,7 @@ section.${c}>footer { z-index: 1; }
         renderContainerNS(elem, ns, tagName, props) {
             return this.createElementNS(ns, tagName, props, this.renderElements(elem.children));
         }
+        // (1) TODO: Dodaj id atribut na p tag
         renderParagraph(elem) {
             var result = this.renderContainer(elem, "p");
             const style = this.findStyle(elem.styleName);

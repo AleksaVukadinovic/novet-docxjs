@@ -496,6 +496,7 @@ export class DocumentParser {
 		return { type: DomType.AltChunk, children: [], id: xml.attr(node, "id") };
 	}
 
+	// (3) TODO: id parsing
 	parseParagraph(node: Element): OpenXmlElement {
 		var result = <WmlParagraph>{ type: DomType.Paragraph, children: [] };
 
