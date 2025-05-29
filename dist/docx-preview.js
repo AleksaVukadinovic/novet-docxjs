@@ -167,6 +167,18 @@
         return new XMLSerializer().serializeToString(elem);
     }
     class XmlParser {
+        extractDataAttributes(elem) {
+            const dataAttributes = {};
+            if (!elem || !elem.attributes)
+                return dataAttributes;
+            for (let i = 0; i < elem.attributes.length; i++) {
+                const attr = elem.attributes.item(i);
+                if (attr && attr.name.startsWith("data-")) {
+                    dataAttributes[attr.name] = attr.value;
+                }
+            }
+            return dataAttributes;
+        }
         elements(elem, localName = null) {
             const result = [];
             for (let i = 0, l = elem.childNodes.length; i < l; i++) {
@@ -1759,7 +1771,7 @@
             return { type: DomType.AltChunk, children: [], id: globalXmlParser.attr(node, "id") };
         }
         parseParagraph(node) {
-            var result = { type: DomType.Paragraph, children: [] };
+            var result = { type: DomType.Paragraph, children: [], xmlElement: node };
             for (let el of globalXmlParser.elements(node)) {
                 switch (el.localName) {
                     case "pPr":
@@ -1861,7 +1873,7 @@
             return result;
         }
         parseRun(node, parent) {
-            var result = { type: DomType.Run, parent: parent, children: [] };
+            var result = { type: DomType.Run, parent: parent, children: [], xmlElement: node };
             xmlUtil.foreach(node, c => {
                 c = this.checkAlternateContent(c);
                 switch (c.localName) {
@@ -3397,6 +3409,10 @@ section.${c}>footer { z-index: 1; }
             var result = this.renderContainer(elem, "p");
             const style = this.findStyle(elem.styleName);
             elem.tabs ?? (elem.tabs = style?.paragraphProps?.tabs);
+            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+            for (const [key, value] of Object.entries(dataAttributes)) {
+                result.setAttribute(key, value);
+            }
             this.renderClass(elem, result);
             this.renderStyleValues(elem.cssStyle, result);
             this.renderCommonProperties(result.style, elem);
@@ -3558,6 +3574,10 @@ section.${c}>footer { z-index: 1; }
             if (elem.fieldRun)
                 return null;
             const result = this.createElement("span");
+            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+            for (const [key, value] of Object.entries(dataAttributes)) {
+                result.setAttribute(key, value);
+            }
             if (elem.id)
                 result.id = elem.id;
             this.renderClass(elem, result);
