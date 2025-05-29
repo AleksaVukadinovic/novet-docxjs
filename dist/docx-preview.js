@@ -3422,9 +3422,11 @@ section.${c}>footer { z-index: 1; }
 
             const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
             for (const [key, value] of Object.entries(dataAttributes)) {
-                const camelCaseKey = key.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+            const strippedKey = key.replace(/^data-/, "");
+            const camelCaseKey = strippedKey.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
             result.dataset[camelCaseKey] = value;
-            }
+            }   
+
 
             this.renderClass(elem, result);
             this.renderStyleValues(elem.cssStyle, result);
@@ -3589,7 +3591,11 @@ section.${c}>footer { z-index: 1; }
                 return null;
             const result = this.createElement("span");
             const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
-            Object.assign(result.dataset, dataAttributes);
+            for (const [key, value] of Object.entries(dataAttributes)) {
+                const strippedKey = key.replace(/^data-/, "");
+                const camelCaseKey = strippedKey.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+                result.dataset[camelCaseKey] = value;
+            }
             if (elem.id)
                 result.id = elem.id;
             this.renderClass(elem, result);
