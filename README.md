@@ -1,10 +1,14 @@
-[![npm version](https://badge.fury.io/js/docx-preview.svg)](https://www.npmjs.com/package/docx-preview)
+[![npm version](https://badge.fury.io/js/docx-preview.svg)]([https://www.npmjs.com/package/docx-preview](https://www.npmjs.com/package/@novet/docx-preview))
 [![Support Ukraine](https://img.shields.io/badge/Support-Ukraine-blue?style=flat&logo=adguard)](https://war.ukraine.ua/)
 
 # docxjs
+
 Docx rendering library
 
-Demo - https://volodymyrbaydalka.github.io/docxjs/
+Originally created by [Volodymyr Baydalka](https://github.com/VolodymyrBaydalka/docxjs)
+Forked and modified by [Aleksa Vukadinović](https://github.com/AleksaVukadinovic) for use within the Novet Organization
+
+Demo – [https://volodymyrbaydalka.github.io/docxjs/](https://volodymyrbaydalka.github.io/docxjs/)
 
 Goal
 ----
