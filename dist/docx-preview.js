@@ -174,8 +174,20 @@
     function serializeXmlString(elem) {
         return new XMLSerializer().serializeToString(elem);
     }
-    // (4) TODO: maybe update here?
+
     class XmlParser {
+        extractDataAttributes(elem) {
+            if (!elem || !elem.attributes) return {}; // Fallback for undefined or missing attributes
+            const dataAttributes = {};
+            for (let i = 0, l = elem.attributes.length; i < l; i++) {
+                let attr = elem.attributes.item(i);
+                if (attr.localName.startsWith('data-')) {
+                    dataAttributes[attr.localName] = attr.value;
+                }
+            }
+            return dataAttributes;
+        }
+
         elements(elem, localName = null) {
             const result = [];
             for (let i = 0, l = elem.childNodes.length; i < l; i++) {
@@ -1768,7 +1780,7 @@
             return { type: DomType.AltChunk, children: [], id: globalXmlParser.attr(node, "id") };
         }
         parseParagraph(node) {
-            var result = { type: DomType.Paragraph, children: [] };
+            var result = { type: DomType.Paragraph, children: [], xmlElement: node };
             for (let el of globalXmlParser.elements(node)) {
                 switch (el.localName) {
                     case "pPr":
@@ -1870,7 +1882,7 @@
             return result;
         }
         parseRun(node, parent) {
-            var result = { type: DomType.Run, parent: parent, children: [] };
+            var result = { type: DomType.Run, parent: parent, children: [], xmlElement: node };
             xmlUtil.foreach(node, c => {
                 c = this.checkAlternateContent(c);
                 switch (c.localName) {
@@ -3402,14 +3414,22 @@ section.${c}>footer { z-index: 1; }
         renderContainerNS(elem, ns, tagName, props) {
             return this.createElementNS(ns, tagName, props, this.renderElements(elem.children));
         }
-        // (1) TODO: Dodaj id atribut na p tag
+
         renderParagraph(elem) {
             var result = this.renderContainer(elem, "p");
             const style = this.findStyle(elem.styleName);
             elem.tabs ?? (elem.tabs = style?.paragraphProps?.tabs);
+
+            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+            for (const [key, value] of Object.entries(dataAttributes)) {
+                const camelCaseKey = key.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+            result.dataset[camelCaseKey] = value;
+            }
+
             this.renderClass(elem, result);
             this.renderStyleValues(elem.cssStyle, result);
             this.renderCommonProperties(result.style, elem);
+
             const numbering = elem.numbering ?? style?.paragraphProps?.numbering;
             if (numbering) {
                 result.classList.add(this.numberingClass(numbering.id, numbering.level));
@@ -3568,6 +3588,8 @@ section.${c}>footer { z-index: 1; }
             if (elem.fieldRun)
                 return null;
             const result = this.createElement("span");
+            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+            Object.assign(result.dataset, dataAttributes);
             if (elem.id)
                 result.id = elem.id;
             this.renderClass(elem, result);
@@ -3584,6 +3606,8 @@ section.${c}>footer { z-index: 1; }
         }
         renderTable(elem) {
             let result = this.createElement("table");
+            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+            Object.assign(result.dataset, dataAttributes);
             this.tableCellPositions.push(this.currentCellPosition);
             this.tableVerticalMerges.push(this.currentVerticalMerge);
             this.currentVerticalMerge = {};

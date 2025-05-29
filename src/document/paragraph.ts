@@ -6,7 +6,6 @@ import { LineSpacing, parseLineSpacing } from "./line-spacing";
 import { XmlParser } from "../parser/xml-parser";
 import { parseRunProperties, RunProperties } from "./run";
 
-// (2) TODO: add id prop here as well
 export interface WmlParagraph extends OpenXmlElement, ParagraphProperties {
 }
 
