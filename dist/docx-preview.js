@@ -103,22 +103,14 @@
     }
 
     const ns$1 = {
-        wordml: "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
-        drawingml: "http://schemas.openxmlformats.org/drawingml/2006/main",
-        picture: "http://schemas.openxmlformats.org/drawingml/2006/picture",
-        compatibility: "http://schemas.openxmlformats.org/markup-compatibility/2006",
-        math: "http://schemas.openxmlformats.org/officeDocument/2006/math"
-    };
+        wordml: "http://schemas.openxmlformats.org/wordprocessingml/2006/main"};
     const LengthUsage = {
         Dxa: { mul: 0.05, unit: "pt" },
         Emu: { mul: 1 / 12700, unit: "pt" },
         FontSize: { mul: 0.5, unit: "pt" },
         Border: { mul: 0.125, unit: "pt", min: 0.25, max: 12 },
         Point: { mul: 1, unit: "pt" },
-        Percent: { mul: 0.02, unit: "%" },
-        LineHeight: { mul: 1 / 240, unit: "" },
-        VmlEmu: { mul: 1 / 12700, unit: "" },
-    };
+        Percent: { mul: 0.02, unit: "%" }};
     function convertLength(val, usage = LengthUsage.Dxa) {
         if (val == null || /.+(p[xt]|[%])$/.test(val)) {
             return val;
@@ -174,20 +166,7 @@
     function serializeXmlString(elem) {
         return new XMLSerializer().serializeToString(elem);
     }
-
     class XmlParser {
-        extractDataAttributes(elem) {
-            if (!elem || !elem.attributes) return {}; // Fallback for undefined or missing attributes
-            const dataAttributes = {};
-            for (let i = 0, l = elem.attributes.length; i < l; i++) {
-                let attr = elem.attributes.item(i);
-                if (attr.localName.startsWith('data-')) {
-                    dataAttributes[attr.localName] = attr.value;
-                }
-            }
-            return dataAttributes;
-        }
-
         elements(elem, localName = null) {
             const result = [];
             for (let i = 0, l = elem.childNodes.length; i < l; i++) {
@@ -1780,7 +1759,7 @@
             return { type: DomType.AltChunk, children: [], id: globalXmlParser.attr(node, "id") };
         }
         parseParagraph(node) {
-            var result = { type: DomType.Paragraph, children: [], xmlElement: node };
+            var result = { type: DomType.Paragraph, children: [] };
             for (let el of globalXmlParser.elements(node)) {
                 switch (el.localName) {
                     case "pPr":
@@ -1882,7 +1861,7 @@
             return result;
         }
         parseRun(node, parent) {
-            var result = { type: DomType.Run, parent: parent, children: [], xmlElement: node };
+            var result = { type: DomType.Run, parent: parent, children: [] };
             xmlUtil.foreach(node, c => {
                 c = this.checkAlternateContent(c);
                 switch (c.localName) {
@@ -3414,24 +3393,13 @@ section.${c}>footer { z-index: 1; }
         renderContainerNS(elem, ns, tagName, props) {
             return this.createElementNS(ns, tagName, props, this.renderElements(elem.children));
         }
-
         renderParagraph(elem) {
             var result = this.renderContainer(elem, "p");
             const style = this.findStyle(elem.styleName);
             elem.tabs ?? (elem.tabs = style?.paragraphProps?.tabs);
-
-            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
-            for (const [key, value] of Object.entries(dataAttributes)) {
-            const strippedKey = key.replace(/^data-/, "");
-            const camelCaseKey = strippedKey.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
-            result.dataset[camelCaseKey] = value;
-            }   
-
-
             this.renderClass(elem, result);
             this.renderStyleValues(elem.cssStyle, result);
             this.renderCommonProperties(result.style, elem);
-
             const numbering = elem.numbering ?? style?.paragraphProps?.numbering;
             if (numbering) {
                 result.classList.add(this.numberingClass(numbering.id, numbering.level));
@@ -3590,12 +3558,6 @@ section.${c}>footer { z-index: 1; }
             if (elem.fieldRun)
                 return null;
             const result = this.createElement("span");
-            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
-            for (const [key, value] of Object.entries(dataAttributes)) {
-                const strippedKey = key.replace(/^data-/, "");
-                const camelCaseKey = strippedKey.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
-                result.dataset[camelCaseKey] = value;
-            }
             if (elem.id)
                 result.id = elem.id;
             this.renderClass(elem, result);
@@ -3612,8 +3574,6 @@ section.${c}>footer { z-index: 1; }
         }
         renderTable(elem) {
             let result = this.createElement("table");
-            const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
-            Object.assign(result.dataset, dataAttributes);
             this.tableCellPositions.push(this.currentCellPosition);
             this.tableVerticalMerges.push(this.currentVerticalMerge);
             this.currentVerticalMerge = {};
