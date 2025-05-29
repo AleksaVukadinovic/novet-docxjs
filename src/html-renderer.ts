@@ -22,6 +22,7 @@ import { BaseHeaderFooterPart } from './header-footer/parts';
 import { Part } from './common/part';
 import { VmlElement } from './vml/vml';
 import { WmlComment, WmlCommentRangeStart, WmlCommentReference } from './comments/elements';
+import globalXmlParser from './parser/xml-parser';
 
 const ns = {
 	svg: "http://www.w3.org/2000/svg",
@@ -907,6 +908,11 @@ section.${c}>footer { z-index: 1; }
 		const style = this.findStyle(elem.styleName);
 		elem.tabs ??= style?.paragraphProps?.tabs;  //TODO
 
+		const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+    for (const [key, value] of Object.entries(dataAttributes)) {
+        result.setAttribute(key, value);
+    }
+
 		this.renderClass(elem, result);
 		this.renderStyleValues(elem.cssStyle, result);
 		this.renderCommonProperties(result.style, elem);
@@ -1129,6 +1135,10 @@ section.${c}>footer { z-index: 1; }
 			return null;
 
 		const result = this.createElement("span");
+		const dataAttributes = globalXmlParser.extractDataAttributes(elem.xmlElement);
+    for (const [key, value] of Object.entries(dataAttributes)) {
+        result.setAttribute(key, value);
+    }
 
 		if (elem.id)
 			result.id = elem.id;

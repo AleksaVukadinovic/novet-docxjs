@@ -497,7 +497,7 @@ export class DocumentParser {
 	}
 
 	parseParagraph(node: Element): OpenXmlElement {
-		var result = <WmlParagraph>{ type: DomType.Paragraph, children: [] };
+		var result = <WmlParagraph>{ type: DomType.Paragraph, children: [], xmlElement: node };
 
 		for (let el of xml.elements(node)) {
 			switch (el.localName) {
@@ -632,7 +632,7 @@ export class DocumentParser {
 	}
 
 	parseRun(node: Element, parent?: OpenXmlElement): WmlRun {
-		var result: WmlRun = <WmlRun>{ type: DomType.Run, parent: parent, children: [] };
+		var result: WmlRun = <WmlRun>{ type: DomType.Run, parent: parent, children: [], xmlElement: node };
 
 		xmlUtil.foreach(node, c => {
 			c = this.checkAlternateContent(c);

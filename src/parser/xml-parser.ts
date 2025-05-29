@@ -28,6 +28,19 @@ export function serializeXmlString(elem: Node): string {
 }
 
 export class XmlParser {
+    extractDataAttributes(elem: Element): Record<string, string> {
+        const dataAttributes: Record<string, string> = {};
+        if (!elem || !elem.attributes) return dataAttributes;
+
+        for (let i = 0; i < elem.attributes.length; i++) {
+            const attr = elem.attributes.item(i);
+            if (attr && attr.name.startsWith("data-")) {
+                dataAttributes[attr.name] = attr.value;
+            }
+        }
+        return dataAttributes;
+    }
+
     elements(elem: Element, localName: string = null): Element[] {
         const result = [];
 

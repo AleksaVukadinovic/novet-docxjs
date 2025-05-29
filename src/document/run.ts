@@ -6,6 +6,7 @@ export interface WmlRun extends OpenXmlElement, RunProperties {
     id?: string;
     verticalAlign?: string;
 	fieldRun?: boolean;  
+    xmlElement?: any;
 }
 
 export interface RunProperties extends CommonProperties {
